@@ -1,0 +1,163 @@
+@use 'sass:color';
+
+// Discord-like color palette
+$background-color: #313338;
+$secondary-color: #2b2d31;
+$text-color: #dbdee1;
+$input-background: #1e1f22;
+$primary-color: #5865F2;
+$accent-color: #00AFF4;
+$border-color: #1a1b1e;
+$hover-color: #4752c4;
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background-color: $background-color;
+  border-bottom: 1px solid $border-color;
+  height: 48px;
+  position: relative;
+  z-index: 100;
+
+  .left-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .menu-button {
+      background: none;
+      border: none;
+      color: $text-color;
+      cursor: pointer;
+      padding: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      &:hover {
+        color: color.adjust($text-color, $lightness: 10%);
+      }
+    }
+
+    .logo {
+      color: $text-color;
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  }
+
+  .right-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .user-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      position: relative;
+
+      &:hover {
+        background-color: color.adjust($background-color, $lightness: -2%);
+      }
+
+      &.active {
+        background-color: color.adjust($background-color, $lightness: -4%);
+      }
+
+      .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+
+        .initials {
+          color: $text-color;
+          font-size: 0.9rem;
+          font-weight: 500;
+        }
+
+        .status-indicator {
+          position: absolute;
+          bottom: -2px;
+          right: -2px;
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          border: 2px solid $background-color;
+        }
+      }
+
+      .username {
+        color: $text-color;
+        font-size: 0.9rem;
+      }
+
+      .status-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background-color: $secondary-color;
+        border-radius: 4px;
+        border: 1px solid $border-color;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        min-width: 150px;
+        margin-top: 0.5rem;
+        padding: 0.5rem 0;
+
+        .status-option {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 1rem;
+          cursor: pointer;
+          color: $text-color;
+
+          &:hover {
+            background-color: color.adjust($secondary-color, $lightness: -2%);
+          }
+
+          &.active {
+            background-color: color.adjust($secondary-color, $lightness: -4%);
+          }
+
+          .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+          }
+
+          &.logout-option {
+            color: #f04747;
+            
+            &:hover {
+              background-color: rgba(#f04747, 0.1);
+            }
+
+            i {
+              font-size: 1rem;
+            }
+          }
+        }
+
+        .divider {
+          height: 1px;
+          background-color: $border-color;
+          margin: 0.5rem 0;
+        }
+      }
+    }
+  }
+}

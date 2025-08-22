@@ -1,0 +1,81 @@
+<div class="registration-container">
+    <h1>Join Our Language Learning Community 🌍</h1>
+    
+    <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+      @if (currentStep$ | async) {
+        @switch (currentStep$ | async) {
+          @case (1) {
+            <div class="step">
+              <h2>👤 What languages do you speak fluently?</h2>
+              <div class="language-grid">
+                @for (lang of languages; track lang.code) {
+                  <button 
+                    type="button"
+                    (click)="toggleLanguage(lang.code)"
+                    [class.selected]="registrationForm.get('languages')?.value.includes(lang.code)"
+                  >
+                    <img [src]="lang.icon" [alt]="lang.name + ' flag'" class="flag-icon" />
+                    <span>{{ lang.name }}</span>
+                  </button>
+                }
+              </div>
+              <div class="nav-buttons">
+                <button type="button" class="next-button" (click)="nextStep()" [disabled]="!(canProceed(1) | async)">
+                  Continue
+                </button>
+              </div>
+            </div>
+          }
+          @case (2) {
+            <div class="step">
+              <h2>🎯 Are you here to teach or to learn?</h2>
+              <div class="user-type-selector">
+                <button type="button" (click)="registrationForm.patchValue({userType: 'student'})" [class.selected]="registrationForm.get('userType')?.value === 'student'">
+                  <span class="icon">👨‍🎓</span>
+                  <span>I'm here to learn</span>
+                </button>
+                <button type="button" (click)="registrationForm.patchValue({userType: 'teacher'})" [class.selected]="registrationForm.get('userType')?.value === 'teacher'">
+                  <span class="icon">👨‍🏫</span>
+                  <span>I'm here to teach</span>
+                </button>
+              </div>
+              <div class="nav-buttons">
+                <button type="button" class="back-button" (click)="prevStep()">Back</button>
+                <button type="button" class="next-button" (click)="nextStep()" [disabled]="!(canProceed(2) | async)">Continue</button>
+              </div>
+            </div>
+          }
+          @case (3) {
+            <div class="step">
+              <h2>🔐 Create your account</h2>
+              <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" formControlName="username" placeholder="Choose a unique username">
+                @if (registrationForm.get('username')?.invalid && registrationForm.get('username')?.touched) {
+                <div class="error-message">Username must be between 3-20 characters</div>
+                }
+              </div>
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" formControlName="email" placeholder="Enter your email address">
+                @if (registrationForm.get('email')?.invalid && registrationForm.get('email')?.touched) {
+                <div class="error-message">Please enter a valid email address</div>
+                }
+              </div>
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" formControlName="password" placeholder="Create a strong password">
+                @if (registrationForm.get('password')?.invalid && registrationForm.get('password')?.touched) {
+                <div class="error-message">Password must be at least 8 characters long</div>
+                }
+              </div>
+              <div class="nav-buttons">
+                <button type="button" class="back-button" (click)="prevStep()">Back</button>
+                <button type="submit" class="next-button" [disabled]="registrationForm.invalid">Create Account</button>
+              </div>
+            </div>
+          }
+        }
+      }
+    </form>
+</div>

@@ -1,0 +1,109 @@
+.chat-input-container {
+  padding: 10px;
+  background: #fff;
+  border-top: 1px solid #e0e0e0;
+}
+
+.input-actions {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.image-upload-label {
+  cursor: pointer;
+  padding: 5px 10px;
+  color: #666;
+}
+
+.image-upload-label:hover {
+  color: #333;
+}
+
+.selected-image {
+  display: flex;
+  align-items: center;
+  background: #f0f0f0;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-left: 10px;
+}
+
+.remove-image {
+  background: none;
+  border: none;
+  color: #666;
+  margin-left: 8px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.remove-image:hover {
+  color: #ff4444;
+}
+
+.input-row {
+  display: flex;
+  gap: 10px;
+}
+
+.message-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.image-container {
+  position: relative;
+  max-width: 200px;
+}
+
+.message-image {
+  max-width: 100%;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.message-image:hover {
+  transform: scale(1.05);
+}
+
+/* Image Modal Styles */
+.image-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-image {
+  max-width: 90%;
+  max-height: 90vh;
+  object-fit: contain;
+}
+
+.close-modal {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  color: white;
+  font-size: 30px;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .image-container {
+    max-width: 150px;
+  }
+}

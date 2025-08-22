@@ -1,0 +1,211 @@
+<app-header></app-header>
+
+<div class="main-layout">
+  <div class="chat-container">
+    <app-sidebar [class.show]="showSidebar"></app-sidebar>
+
+    <div class="chat-content">
+      <!-- Loading and Error States -->
+      <div *ngIf="loading" class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>Loading conversation...</p>
+      </div>
+
+      <div *ngIf="error" class="error-state">
+        <span class="error-icon">⚠️</span>
+        <p>{{ error }}</p>
+      </div>
+
+      <!-- Main Chat Interface -->
+      <div *ngIf="!loading && !error" class="chat-interface">
+        <!-- Chat Header -->
+        <div class="chat-header">
+          <div class="user-info" *ngIf="otherUser">
+            <div class="user-avatar" [style.background-color]="otherUser.avatarColor">
+              <span class="initials">{{ getInitials(otherUser.username) }}</span>
+            </div>
+            <div class="user-details">
+              <h2>{{ otherUser.username }}</h2>
+              <span class="native-badge" *ngIf="isNative">
+                <img [src]="getLanguageIcon(conversation?.language || '')" [alt]="'Native ' + conversation?.language + ' speaker'" class="flag-icon" />
+                Native Speaker
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Messages Container -->
+        <div #messagesContainer class="messages-container" [scrollTop]="messagesContainer.scrollHeight">
+          <ng-container *ngFor="let message of allMessages; trackBy: trackByFn; let i = index">
+            <!-- System Message - Only show if it's not a duplicate -->
+            <div *ngIf="message.type === 'system' && !isDuplicateSystemMessage(message, i)"
+              class="message system-message">
+              <div class="system-message-content">
+                <span class="system-icon">{{ getMessageTypeEmoji('system') }}</span>
+                {{ message.message }}
+                <span class="message-time">{{ message.timestamp | date:'short' }}</span>
+              </div>
+            </div>
+
+            <!-- Chat Message -->
+            <div *ngIf="message.type === 'message'" [ngClass]="{
+                   'message': true,
+                   'message-received': message.senderId !== currentUserId && message.sender?.id !== currentUserId,
+                   'message-sent': message.senderId === currentUserId || message.sender?.id === currentUserId,
+                   'history-message': !message.isRealtime,
+                   'realtime-message': message.isRealtime
+                 }">
+              <div class="message-group">
+                <div class="message-avatar" *ngIf="message.senderId !== currentUserId"
+                  [style.background-color]="getUserColor(message.senderId || message.sender?.id)"
+                  (click)="onUserClick(message.sender || { id: message.senderId, username: message.username })"
+                  role="button" tabindex="0">
+                  <span class="initials">{{ getInitials(message.sender?.username || message.username) }}</span>
+                </div>
+                <div class="message-content-wrapper">
+                  <div class="message-header" *ngIf="message.senderId !== currentUserId">
+                    <span class="message-sender"
+                      (click)="onUserClick(message.sender || { id: message.senderId, username: message.username })"
+                      role="button" tabindex="0">
+                      {{ message.sender?.username || message.username }}
+                    </span>
+                    <span class="message-time">{{ (message.datetime || message.timestamp) | date:'short' }}</span>
+                  </div>
+                  <div class="message-content">
+                    <div *ngIf="message.content" class="message-text">{{ message.content }}</div>
+                    <div *ngIf="message.has_image && message.images?.length" class="message-images">
+                      <div *ngFor="let image of message.images" class="image-container">
+                        <img [src]="imageService.getImageUrl(image.path)" 
+                             [alt]="image.filename" 
+                             class="message-image" 
+                             (click)="openImageModal(image)">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Typing Indicator -->
+          <div *ngIf="typingUsers.size > 0" class="typing-indicator">
+            <div class="typing-dots">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+            <span class="typing-text">{{ getTypingUsersText() }} {{ typingUsers.size === 1 ? 'is' : 'are' }} typing</span>
+          </div>
+        </div>
+
+        <!-- Message Input -->
+        <div class="chat-input-container">
+          <div class="input-actions">
+            <label for="image-upload" class="image-upload-label">
+              <i class="fas fa-image"></i>
+              <input 
+                type="file" 
+                id="image-upload" 
+                accept="image/*" 
+                (change)="onFileSelected($event)" 
+                style="display: none;">
+            </label>
+            <button class="topics-button" (click)="openNewsModal()">
+              <i class="fas fa-newspaper"></i>
+              <span>Topics</span>
+            </button>
+            <div class="selected-image" *ngIf="selectedImage">
+              <span>{{ selectedImage.name }}</span>
+              <button class="remove-image" (click)="selectedImage = null">×</button>
+            </div>
+          </div>
+          <div class="input-row">
+            <textarea
+              #messageInput
+              [(ngModel)]="newMessage"
+              placeholder="Type a message..."
+              (keyup.enter)="sendMessage()"
+              (input)="onTyping($event)"
+              class="message-input"
+            ></textarea>
+            <button class="send-button" (click)="sendMessage()" [disabled]="!newMessage.trim() && !selectedImage">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- User Profile Modal -->
+<div *ngIf="selectedUser" class="modal user-modal" (click)="closeUserModal()">
+  <div class="modal-content user-profile" (click)="$event.stopPropagation()">
+    <button class="close-button" (click)="closeUserModal()">&times;</button>
+
+    <div class="user-profile-header">
+      <div class="user-avatar large" [style.background-color]="selectedUser.avatarColor">
+        <span class="initials">{{ getInitials(selectedUser.username) }}</span>
+        <div class="status-indicator" [style.background-color]="getStatusColor(selectedUser.status || 'offline')"></div>
+      </div>
+      <div class="user-info">
+        <h2>{{ selectedUser.username }}</h2>
+        <span class="status">{{ selectedUser.status }}</span>
+      </div>
+    </div>
+
+    <div class="user-actions">
+      <button class="action-button primary" (click)="addContact(selectedUser)">
+        <i class="fas fa-user-plus"></i>
+        <span>Add Contact</span>
+      </button>
+      <button class="action-button secondary" (click)="blockUser(selectedUser)">
+        <i class="fas fa-ban"></i>
+        <span>Block User</span>
+      </button>
+      <button class="action-button secondary" (click)="reportUser(selectedUser)">
+        <i class="fas fa-flag"></i>
+        <span>Report User</span>
+      </button>
+    </div>
+
+    <div class="user-details">
+      <div class="detail-item">
+        <span class="label">User Type</span>
+        <span class="value">{{ getUserTypeLabel(selectedUser.type) }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="label">Member Since</span>
+        <span class="value">{{ getMemberSince(selectedUser) }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Image Modal -->
+<div class="modal image-modal" *ngIf="showImageModal" (click)="closeImageModal()">
+  <div class="modal-content image-preview" (click)="$event.stopPropagation()">
+    <button class="close-button" (click)="closeImageModal()">&times;</button>
+    <div class="image-container">
+      <img [src]="selectedModalImage?.displayUrl" [alt]="selectedModalImage?.filename" class="modal-image">
+    </div>
+    <div class="image-details" *ngIf="selectedModalImage?.filename">
+      <span class="filename">{{ selectedModalImage?.filename }}</span>
+    </div>
+  </div>
+</div>
+
+<!-- News Modal -->
+<div *ngIf="showNewsModal" class="modal" (click)="closeNewsModal()">
+  <div class="modal-content news-content" (click)="$event.stopPropagation()">
+    <button class="close-button" (click)="closeNewsModal()">&times;</button>
+    <h3>Conversation Topics</h3>
+    <div class="articles-container">
+      <div *ngFor="let article of newsArticles" class="article">
+        <h3>{{ article.title }}</h3>
+        <p>{{ article.description }}</p>
+        <a [href]="article.url" target="_blank" rel="noopener noreferrer">Read more</a>
+      </div>
+    </div>
+  </div>
+</div>

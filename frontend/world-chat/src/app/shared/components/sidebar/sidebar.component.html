@@ -1,0 +1,57 @@
+<div class="sidebar-container" [class.show]="isOpen">
+  <!-- Main Menu -->
+  <div class="menu-sections">
+    <div class="menu-section">
+      <ul class="menu">
+        <li *ngFor="let item of menuItems" class="menu-item">
+          <a [routerLink]="item.link" routerLinkActive="active" class="menu-link">
+            <i [class]="item.icon" class="menu-icon"></i>
+            <span class="menu-label">{{ item.label }}</span>
+            <span *ngIf="item.badge" class="badge" [class.pulse]="item.badge > 0">
+              {{ item.badge }}
+            </span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Contacts Section -->
+    <div class="menu-section">
+      <div class="section-header">
+        <span class="section-title">Contacts</span>
+        <button class="add-button" (click)="onAddContact()" title="Add Contact">
+          <i class="fas fa-plus"></i>
+        </button>
+      </div>
+      <ul class="menu">
+        <li *ngFor="let contact of contactItems" class="menu-item">
+          <a [routerLink]="contact.link" routerLinkActive="active" class="menu-link">
+            <i [class]="contact.icon" class="menu-icon"></i>
+            <span class="menu-label">{{ contact.label }}</span>
+            <span *ngIf="contact.badge" class="badge" [class.pulse]="contact.badge > 0">
+              {{ contact.badge }}
+            </span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- User Section -->
+  <div class="user-section">
+    <div class="user-info">
+      <div class="user-status" [class.online]="isUserOnline">
+        <span class="status-indicator"></span>
+        <span class="status-text">{{ userStatus }}</span>
+      </div>
+      <div class="user-actions">
+        <button class="action-button" (click)="toggleMute()" [class.active]="isMuted" title="Toggle Mute">
+          <i class="fas" [class.fa-volume-up]="!isMuted" [class.fa-volume-mute]="isMuted"></i>
+        </button>
+        <button class="action-button" (click)="toggleSettings()" title="Settings">
+          <i class="fas fa-cog"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

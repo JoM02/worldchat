@@ -1,0 +1,30 @@
+# Node.js
+backend/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+dist/
+build/
+
+# IDEs
+.vscode/
+.idea/
+*.iml
+
+# Ignore package-lock.json
+backend/package-lock.json
+
+# Upload directory
+backend/uploads/

@@ -1,0 +1,119 @@
+@use 'sass:color';
+
+// Palette de couleurs sombres
+$primary-color: #5865F2;    // Discord Blurple
+$secondary-color: #ffffff;  // Blanc
+$text-color: #dcddde;       // Texte clair
+$dark-text: #72767d;        // Texte plus sombre
+$background-color: #36393f; // Fond principal sombre
+$card-background: #2f3136;  // Fond des cartes
+$border-color: #202225;     // Bordures
+$hover-color: #40444b;      // Hover state
+$success-color: #43b581;    // Success green
+$error-color: #f04747;      // Error red
+
+// Conteneur principal
+.contacts-container {
+  padding: 20px;
+  background-color: $background-color;
+  color: $text-color;
+  min-height: 100vh;
+
+  .contacts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); // Colonnes dynamiques
+    gap: 20px;
+
+    .contact-card {
+      background-color: $card-background;
+      border: 1px solid $border-color;
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: box-shadow 0.3s ease;
+
+      &:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .contact-avatar {
+        margin-bottom: 15px;
+
+        img {
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+      }
+
+      .contact-info {
+        margin-bottom: 15px;
+
+        h3 {
+          color: $secondary-color;
+          font-size: 18px;
+          margin-bottom: 5px;
+        }
+
+        p {
+          color: $dark-text;
+          margin-bottom: 5px;
+          font-size: 14px;
+        }
+
+        .user-type {
+          display: inline-block;
+          background-color: $hover-color;
+          color: $text-color;
+          padding: 4px 10px;
+          border-radius: 3px;
+          font-size: 12px;
+        }
+      }
+
+      .contact-actions {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+
+        .action-btn {
+          background-color: $hover-color;
+          color: $text-color;
+          padding: 8px 12px;
+          border-radius: 5px;
+          cursor: pointer;
+          font-weight: bold;
+          transition: background-color 0.3s ease, transform 0.2s ease;
+
+          &:hover {
+            background-color: color.adjust($hover-color, $lightness: 10%);
+            transform: scale(1.05);
+          }
+
+          &.primary {
+            background-color: $primary-color;
+            &:hover {
+              background-color: color.adjust($primary-color, $lightness: 10%);
+            }
+          }
+
+          &.danger {
+            background-color: $error-color;
+            color: $secondary-color;
+            &:hover {
+              background-color: color.adjust($error-color, $lightness: 10%);
+            }
+          }
+
+          i {
+            font-size: 16px;
+          }
+        }
+      }
+    }
+  }
+}

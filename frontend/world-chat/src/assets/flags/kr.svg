@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="640px" height="480px" viewBox="0 0 640 480" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <g>
+        <path fill="#fff" d="M0,0 h640 v480 H0 z"/>
+        <circle cx="320" cy="240" r="120" fill="#fff"/>
+        <path d="M320,120 a120,120 0 0 1 0,240 a60,60 0 0 1 0,-240" fill="#c60c30"/>
+        <path d="M320,120 a120,120 0 0 0 0,240 a60,60 0 0 0 0,-240" fill="#003478"/>
+    </g>
+</svg>

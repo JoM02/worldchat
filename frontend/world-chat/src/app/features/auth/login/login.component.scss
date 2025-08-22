@@ -1,0 +1,161 @@
+@use 'sass:color';
+@use 'sass:math';
+
+// Discord-like color palette
+$background-color: #313338;  // Darker background
+$secondary-color: #2b2d31;   // Slightly lighter background
+$text-color: #dbdee1;        // Light text
+$input-background: #1e1f22;  // Very dark input background
+$primary-color: #5865F2;     // Discord Blurple
+$accent-color: #00AFF4;      // Bright accent
+$border-color: #1a1b1e;      // Dark border
+$hover-color: #4752c4;       // Hover state
+$error-color: #f23f42;       // Error red
+
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: url('/assets/images/auth-bg.svg') no-repeat center center;
+  background-size: cover;
+  background-color: $background-color;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 420px;
+  padding: 1.5rem;
+  background-color: rgba($secondary-color, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  color: $text-color;
+  position: relative;
+  border: 1px solid $border-color;
+
+  h1 {
+    font-size: 1.75rem;
+    color: $text-color;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+
+  .form-group {
+    width: 100%;
+    margin-bottom: 1rem;
+
+    label {
+      display: block;
+      margin-bottom: 0.4rem;
+      color: $text-color;
+      font-size: 0.825rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      text-align: left;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.625rem;
+      background-color: $input-background;
+      border: 1px solid $border-color;
+      border-radius: 4px;
+      color: $text-color;
+      font-size: 0.95rem;
+      transition: border-color 0.2s ease;
+
+      &:focus {
+        outline: none;
+        border-color: $primary-color;
+      }
+
+      &::placeholder {
+        color: #72767d;
+      }
+    }
+
+    .error-message {
+      color: $error-color;
+      font-size: 0.7rem;
+      margin-top: 0.25rem;
+      text-align: left;
+    }
+  }
+
+  .submit-button {
+    width: 100%;
+    padding: 0.625rem;
+    background-color: $primary-color;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 0.5rem;
+
+    &:hover {
+      background-color: $hover-color;
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    &:disabled {
+      background-color: #4f545c;
+      cursor: not-allowed;
+      transform: none;
+    }
+  }
+
+  .additional-options {
+    width: 100%;
+    max-width: 320px;
+    margin: 1rem auto 0;
+    text-align: right;
+
+    a {
+      color: $accent-color;
+      text-decoration: none;
+      font-size: 0.825rem;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .register-link {
+    width: 100%;
+    max-width: 320px;
+    margin: 1rem auto 0;
+    text-align: center;
+    color: #72767d;
+    font-size: 0.825rem;
+
+    a {
+      color: $accent-color;
+      text-decoration: none;
+      cursor: pointer;
+      margin-left: 0.25rem;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}

@@ -1,0 +1,29 @@
+<!-- header.component.html -->
+<div class="header">
+  <div class="left-section">
+    <div class="logo" routerLink="/dashboard">
+      <span>WorldChat</span>
+    </div>
+  </div>
+
+  <div class="right-section" *ngIf="currentUser">
+    <div class="user-status" (click)="toggleStatusMenu($event)" [class.active]="showStatusMenu">
+      <div class="avatar" [style.background-color]="userAvatarColor">
+        <span class="initials">{{ getInitials(currentUser.username) }}</span>
+      </div>
+      <span class="username">{{ currentUser.username }}</span>
+      <div class="status-menu" *ngIf="showStatusMenu" (click)="$event.stopPropagation()">
+        <div class="status-option" *ngFor="let status of availableStatuses" (click)="setStatus(status, $event)"
+          [class.active]="currentUser.status === status">
+          <div class="status-dot" [style.background-color]="getStatusColor(status)"></div>
+          <span>{{ getStatusText(status) }}</span>
+        </div>
+        <div class="divider"></div>
+        <div class="status-option logout-option" (click)="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

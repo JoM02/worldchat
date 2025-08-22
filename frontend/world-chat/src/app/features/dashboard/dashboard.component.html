@@ -1,0 +1,219 @@
+<app-header></app-header>
+<div class="dashboard-container animate-in">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <!-- User Profile -->
+    <div class="user-profile">
+      <div class="user-info">
+        <span class="status">{{ currentUserType === 'student' ? '🎓 Student' : '👨‍🏫 Teacher' }}</span>
+      </div>
+    </div>
+
+    <!-- Language Selection -->
+    <div class="language-section">
+      <div class="section-header">
+        <h2>Start Learning</h2>
+        <div class="header-line"></div>
+      </div>
+      
+      <select 
+        class="language-select" 
+        [(ngModel)]="selectedLanguage"
+        [disabled]="chatStarting">
+        <option value="">Choose a language</option>
+        <option *ngFor="let lang of languages" [value]="lang.code">
+          <img [src]="getLanguageIcon(lang.code)" [alt]="lang.name + ' flag'" class="flag-icon" />
+          {{ lang.name }}
+        </option>
+      </select>
+      
+      <button 
+        class="start-chat-btn" 
+        (click)="startNewChat()"
+        [disabled]="!selectedLanguage || chatStarting"
+        [class.searching]="chatStarting">
+        <span class="btn-icon">{{ chatStarting ? '🔍' : '💬' }}</span>
+        {{ chatStarting ? 'Finding Match...' : 'Start Chat' }}
+      </button>
+
+      <div class="matching-status" *ngIf="waiting">
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="matchingProgress"></div>
+        </div>
+        <div class="status-text">
+          <span class="status-emoji">{{ matchingProgress < 30 ? '🔍' : matchingProgress < 60 ? '⚡' : '✨' }}</span>
+          {{ matchingStatus }}
+        </div>
+        <p class="match-type">
+          Looking for a {{ currentUserType === 'student' ? 'teacher' : 'student' }} who speaks 
+          <span class="language-badge">
+            <img [src]="getLanguageIcon(selectedLanguage)" [alt]="getLanguageName(selectedLanguage) + ' flag'" class="flag-icon" />
+            {{ getLanguageName(selectedLanguage) }}
+          </span>
+        </p>
+      </div>
+    </div>
+  <!-- Contact Access -->
+  <button class="contact-btn" (click)="goToContacts()">
+    <span class="btn-icon">👥</span>
+    Access Contacts
+  </button>
+
+    <!-- Conversations Lists -->
+    <!-- Random Chats Section -->
+    <div class="conversations-section">
+      <div class="section-header">
+        <h2>Random Chats</h2>
+        <div class="header-line"></div>
+      </div>
+      
+      <div class="loading-spinner" *ngIf="loading">
+        <div class="spinner-inner"></div>
+      </div>
+      
+      <div class="error-message" *ngIf="error">
+        <span class="error-icon">⚠️</span>
+        {{ error }}
+      </div>
+      
+      <div class="chat-list" *ngIf="!loading && !error">
+        <div class="no-chats" *ngIf="getRandomChatsList().length === 0">
+          No random chats yet
+        </div>
+        
+        <div *ngFor="let conversation of getRandomChatsList()" 
+             class="chat-item">
+          <div class="chat-avatar" [style.background-color]="getOtherUser(conversation)?.avatarColor">
+            <span class="initials">{{ getInitials(getOtherUser(conversation)?.username || '') }}</span>
+          </div>
+          <div class="chat-details" [routerLink]="['/chat', conversation.id]">
+            <div class="chat-header">
+              <span class="chat-name">{{ getOtherUser(conversation)?.username }}</span>
+              <span class="chat-type">{{ getOtherUser(conversation)?.type === 'student' ? '🎓' : '👨‍🏫' }}</span>
+            </div>
+            <div class="chat-info">
+              <span class="chat-language">
+                <img [src]="getLanguageIcon(conversation.language)" [alt]="getLanguageName(conversation.language) + ' flag'" class="flag-icon" />
+                {{ getLanguageName(conversation.language) }}
+              </span>
+              <span class="chat-status">Random Chat</span>
+            </div>
+          </div>
+          <button class="delete-chat-btn" (click)="deleteConversation(conversation.id)">
+            <span>🗑️</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Private Chats Section -->
+    <div class="conversations-section">
+      <div class="section-header">
+        <h2>Private Chats</h2>
+        <div class="header-line"></div>
+      </div>
+      
+      <div class="chat-list">
+        <div class="no-chats" *ngIf="getPrivateChatsList().length === 0">
+          No private chats yet
+        </div>
+        
+        <div *ngFor="let conversation of getPrivateChatsList()" 
+             class="chat-item">
+          <div class="chat-avatar" [style.background-color]="getOtherUser(conversation)?.avatarColor">
+            <span class="initials">{{ getInitials(getOtherUser(conversation)?.username || '') }}</span>
+          </div>
+          <div class="chat-details" [routerLink]="['/chat', conversation.id]">
+            <div class="chat-header">
+              <span class="chat-name">{{ getOtherUser(conversation)?.username }}</span>
+              <span class="chat-type">{{ getOtherUser(conversation)?.type === 'student' ? '🎓' : '👨‍🏫' }}</span>
+            </div>
+            <div class="chat-info">
+              <span class="chat-language">
+                <img [src]="getLanguageIcon(conversation.language)" [alt]="getLanguageName(conversation.language) + ' flag'" class="flag-icon" />
+                {{ getLanguageName(conversation.language) }}
+              </span>
+              <span class="chat-status">Private Chat</span>
+            </div>
+          </div>
+          <button class="delete-chat-btn" (click)="deleteConversation(conversation.id)">
+            <span>🗑️</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="stats-section">
+      <h2 class="section-title">Statistics Overview</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-comments"></i>
+          </div>
+          <div class="stat-info">
+            <h3>Total Chats</h3>
+            <p>{{ getTotalChatsCount() }}</p>
+          </div>
+          <div class="stat-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="(getTotalChatsCount() / 100) * 100"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-random"></i>
+          </div>
+          <div class="stat-info">
+            <h3>Random Chats</h3>
+            <p>{{ getRandomChatsCount() }}</p>
+          </div>
+          <div class="stat-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="(getRandomChatsCount() / getTotalChatsCount()) * 100"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fas fa-user-friends"></i>
+          </div>
+          <div class="stat-info">
+            <h3>Private Chats</h3>
+            <p>{{ getPrivateChatsCount() }}</p>
+          </div>
+          <div class="stat-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="(getPrivateChatsCount() / getTotalChatsCount()) * 100"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="welcome-message">
+      <div class="welcome-icon">🌍</div>
+      <h1>Welcome to WorldChat!</h1>
+      <p>Connect with {{ currentUserType === 'student' ? 'teachers' : 'students' }} worldwide and start learning new languages.</p>
+      <div class="feature-list">
+        <div class="feature-item">
+          <span class="feature-icon">🔍</span>
+          <span>Find language partners</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">💬</span>
+          <span>Real-time chat</span>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🌟</span>
+          <span>Learn from natives</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

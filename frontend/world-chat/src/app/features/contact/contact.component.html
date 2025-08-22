@@ -1,0 +1,62 @@
+<app-header></app-header>
+
+<div class="contacts-container">
+  <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+  <div class="contacts-grid">
+    <div *ngFor="let user of contactUsers" class="contact-card">
+      <div class="contact-info">
+        <h3>{{ user.username }}</h3>
+        <p *ngIf="user.email">{{ user.email }}</p>
+        <span class="user-type">{{ getUserTypeLabel(user.type) }}</span>
+        
+        <!-- Status message -->
+        <span class="contact-status" *ngIf="user.status === 'Pending'">
+          {{ isSender(user) ? 'Request Pending' : 'Wants to connect' }}
+        </span>
+        <span class="contact-status" *ngIf="user.status === 'Accepted'">
+          Connected
+        </span>
+      </div>
+
+      <div class="contact-actions">
+        <!-- Pending status actions -->
+        <ng-container *ngIf="user.status === 'Pending'">
+          <!-- Sender view -->
+          <ng-container *ngIf="isSender(user)">
+            <button class="action-btn danger" 
+                    (click)="onDeleteContact(user.id)">
+              Cancel Request
+            </button>
+          </ng-container>
+          
+          <!-- Receiver view -->
+          <ng-container *ngIf="!isSender(user)">
+            <button class="action-btn primary" 
+                    (click)="onAcceptContact(user.id)">
+              Accept
+            </button>
+            <button class="action-btn danger" 
+                    (click)="onDeleteContact(user.id)">
+              Refuse
+            </button>
+          </ng-container>
+        </ng-container>
+
+        <!-- Accepted status actions -->
+        <ng-container *ngIf="user.status === 'Accepted'">
+          <button class="action-btn" 
+                  (click)="onPrivateMessage(user.id)">
+            Message
+            <i class="fa fa-comment"></i>
+          </button>
+          <button class="action-btn danger" 
+                  (click)="onDeleteContact(user.id)">
+            Remove
+            <i class="fa fa-trash"></i>
+          </button>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
